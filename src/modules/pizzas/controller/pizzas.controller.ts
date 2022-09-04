@@ -8,9 +8,9 @@ import {
   Put,
 } from '@nestjs/common';
 import { UpdateResult } from 'typeorm';
-import { CreatePizzaDto } from '../dto/create-pizza.dto';
-import { UpdatePizzaDto } from '../dto/update-pizza.dto';
-import { Pizza } from '../entity/pizza.entity';
+import { CreatePizzaDTO } from '../dto/create-pizza.dto';
+import { UpdatePizzaDTO } from '../dto/update-pizza.dto';
+import { Pizza } from '../pizza.entity';
 import { PizzasService } from '../service/pizzas.service';
 
 @Controller('/api/pizzas')
@@ -18,7 +18,7 @@ export class PizzasController {
   constructor(private pizzasService: PizzasService) {}
 
   @Post()
-  async createPizzas(@Body() createPizzaDto: CreatePizzaDto): Promise<Pizza> {
+  async createPizzas(@Body() createPizzaDto: CreatePizzaDTO): Promise<Pizza> {
     const pizza = await this.pizzasService.createPizza(createPizzaDto);
     return pizza;
   }
@@ -38,7 +38,7 @@ export class PizzasController {
   @Put(':id')
   async updatePizza(
     @Param('id') id: string,
-    @Body() UpdatePizzaDto: UpdatePizzaDto,
+    @Body() UpdatePizzaDto: UpdatePizzaDTO,
   ): Promise<UpdateResult> {
     return await this.pizzasService.updatedPizza(id, UpdatePizzaDto);
   }

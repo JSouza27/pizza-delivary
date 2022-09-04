@@ -10,7 +10,7 @@ export class Pizza {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ nullable: false, type: 'varchar', length: 150 })
+  @Column({ nullable: false, type: 'varchar', length: 150, unique: true })
   name: string;
 
   @Column({ nullable: false, type: 'int' })

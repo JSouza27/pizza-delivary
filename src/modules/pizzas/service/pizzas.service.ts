@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
-import { CreatePizzaDto } from '../dto/create-pizza.dto';
-import { UpdatePizzaDto } from '../dto/update-pizza.dto';
-import { Pizza } from '../entity/pizza.entity';
+import { CreatePizzaDTO } from '../dto/create-pizza.dto';
+import { UpdatePizzaDTO } from '../dto/update-pizza.dto';
+import { Pizza } from '../pizza.entity';
 
 @Injectable()
 export class PizzasService {
@@ -12,7 +12,7 @@ export class PizzasService {
     private pizzasRepository: Repository<Pizza>,
   ) {}
 
-  async createPizza(createPizzaDto: CreatePizzaDto): Promise<Pizza> {
+  async createPizza(createPizzaDto: CreatePizzaDTO): Promise<Pizza> {
     const pizza = await this.pizzasRepository.save(createPizzaDto);
 
     return pizza;
@@ -28,7 +28,7 @@ export class PizzasService {
     return pizza;
   }
 
-  async updatedPizza(id: string, data: UpdatePizzaDto): Promise<UpdateResult> {
+  async updatedPizza(id: string, data: UpdatePizzaDTO): Promise<UpdateResult> {
     const updated = await this.pizzasRepository.update(id, { ...data });
     return updated;
   }
