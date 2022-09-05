@@ -60,9 +60,7 @@ export class PizzasService implements IPizzaService {
 
   async updatePizza(id: string, data: UpdatePizzaDTO): Promise<Pizza> {
     await this.pizzaExist(id);
-
     try {
-      this.pizzaExist(id);
       await this.pizzasRepository.update(id, { ...data });
 
       const updated = await this.pizzasRepository.findOneBy({ id: id });

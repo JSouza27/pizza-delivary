@@ -7,7 +7,7 @@ export interface IOrderService {
 
   findAllOrder(): Promise<Order[]>;
 
-  findOrderById(id: number): Promise<Order>;
+  findOrderById(id: number): Promise<Order | []>;
 
   updateOrderById(id: number, data: UpdateOrderDTO): Promise<Order>;
 

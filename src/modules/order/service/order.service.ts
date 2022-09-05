@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order } from '../order.entity';
@@ -14,32 +14,68 @@ export class OrderService implements IOrderService {
   ) {}
 
   async createOrder(itens: CreateOrderDTO): Promise<Order> {
-    return await this.orderRepository.save(itens);
+    try {
+      return await this.orderRepository.save(itens);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async findAllOrder(): Promise<Order[]> {
-    return await this.orderRepository.find();
+    try {
+      return await this.orderRepository.find();
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async findOrderById(id: number): Promise<Order> {
-    return await this.orderRepository.findOneByOrFail({ id });
+    try {
+      const order = await this.orderRepository.findOneBy({ id });
+
+      if (!order) {
+        throw new HttpException('Order does not exist.', HttpStatus.NOT_FOUND);
+      }
+
+      return order;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async updateOrderById(id: number, data: UpdateOrderDTO): Promise<Order> {
-    // await this.orderRepository.update(id, data);
+    try {
+      const order = await this.orderRepository.findOneBy({ id });
 
-    return await this.orderRepository.findOneBy({ id });
+      if (!order) {
+        throw new HttpException('Order does not exist.', HttpStatus.NOT_FOUND);
+      }
+
+      await this.orderRepository.update(id, data);
+
+      return await this.orderRepository.findOneBy({ id });
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async removeOrderById(id: number): Promise<boolean> {
-    await this.orderRepository.delete(id);
+    try {
+      const order = await this.orderRepository.findOneBy({ id });
 
-    const order = await this.orderRepository.findOneByOrFail({ id });
+      if (!order) {
+        throw new HttpException('Order does not exist.', HttpStatus.NOT_FOUND);
+      }
 
-    if (!order) {
-      return true;
+      await this.orderRepository.delete(id);
+
+      const isOrder = await this.orderRepository.findOneBy({ id });
+
+      if (!isOrder) {
+        return true;
+      }
+    } catch (error) {
+      throw new Error('There was a problem removing the order.');
     }
-
-    throw new Error('There was a problem removing the order.');
   }
 }
