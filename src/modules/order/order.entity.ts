@@ -1,15 +1,22 @@
 import { OrderItem } from '../order-item/order-item.entity';
-import { Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Order {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
-  @OneToMany(() => OrderItem, (orderItens: OrderItem) => orderItens.order, {
-    eager: true,
-    cascade: true,
-  })
-  @JoinColumn({ name: 'itens_id' })
+  @OneToMany((type) => OrderItem, (orderItens: OrderItem) => orderItens.order)
   itens: OrderItem[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @CreateDateColumn()
+  updatedAt: Date;
 }

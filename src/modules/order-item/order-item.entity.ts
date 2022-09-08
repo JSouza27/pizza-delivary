@@ -11,16 +11,17 @@ import { Order } from '../order/order.entity';
 
 @Entity('order_item')
 export class OrderItem {
-  @PrimaryGeneratedColumn('increment')
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @OneToOne(() => Pizza)
-  @JoinColumn()
+  @ManyToOne(() => Pizza, { eager: true })
+  @JoinColumn({ name: 'pizza_id' })
   pizza: Pizza;
 
   @Column({ nullable: false })
   quantity: number;
 
   @ManyToOne(() => Order, (order: Order) => order.itens)
+  @JoinColumn({ name: 'order_id' })
   order: Order;
 }

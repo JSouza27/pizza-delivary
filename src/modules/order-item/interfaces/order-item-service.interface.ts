@@ -5,9 +5,9 @@ import { OrderItem } from '../order-item.entity';
 export interface IOrdemItemService {
   addItem(item: ItemDTO): Promise<OrderItem>;
 
-  findOrderItemById(id: number): Promise<OrderItem>;
+  findOrderItemById(id: string): Promise<OrderItem>;
 
-  updatedItem(id: number, data: UpdatedItemDTO): Promise<OrderItem>;
+  updatedItem(id: string, data: UpdatedItemDTO): Promise<OrderItem>;
 
-  removeItem(id: number): Promise<boolean>;
+  removeItem(id: string): Promise<boolean>;
 }

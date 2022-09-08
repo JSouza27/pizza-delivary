@@ -8,7 +8,7 @@ export class OrderItemController {
   constructor(private orderItemService: OrderItemService) {}
 
   @Get(':id')
-  async findOrderItemById(@Param('id') id: number) {
+  async findOrderItemById(@Param('id') id: string) {
     return this.orderItemService.findOrderItemById(id);
   }
 

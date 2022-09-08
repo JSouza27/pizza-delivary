@@ -10,7 +10,7 @@ import { Pizza } from '../pizza.entity';
 export class PizzasService implements IPizzaService {
   constructor(
     @InjectRepository(Pizza)
-    private pizzasRepository: Repository<Pizza>,
+    private readonly pizzasRepository: Repository<Pizza>,
   ) {}
 
   protected async pizzaExist(id: string) {

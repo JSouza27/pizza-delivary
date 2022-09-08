@@ -21,7 +21,7 @@ export class OrderItemService implements IOrdemItemService {
     }
   }
 
-  async findOrderItemById(id: number): Promise<OrderItem> {
+  async findOrderItemById(id: string): Promise<OrderItem> {
     try {
       return await this.orderItemRepository.findOneByOrFail({ id: id });
     } catch (error) {
@@ -33,7 +33,7 @@ export class OrderItemService implements IOrdemItemService {
     }
   }
 
-  async updatedItem(id: number, data: UpdatedItemDTO): Promise<OrderItem> {
+  async updatedItem(id: string, data: UpdatedItemDTO): Promise<OrderItem> {
     try {
       const item = await this.orderItemRepository.findOneBy({ id: id });
 
@@ -49,7 +49,7 @@ export class OrderItemService implements IOrdemItemService {
     }
   }
 
-  async removeItem(id: number): Promise<boolean> {
+  async removeItem(id: string): Promise<boolean> {
     try {
       const item = await this.orderItemRepository.findOneBy({ id: id });
 

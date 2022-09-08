@@ -3,19 +3,30 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order } from '../order.entity';
 import { IOrderService } from '../interfaces/order-service.interface';
-import { CreateOrderDTO } from '../dto/create-order.dto';
 import { UpdateOrderDTO } from '../dto/update-order.dto';
+import { OrderItemService } from '../../order-item/service/order-item.service';
+import { ItemDTO } from 'modules/order-item/dto/item.dto';
 
 @Injectable()
 export class OrderService implements IOrderService {
   constructor(
     @InjectRepository(Order)
-    private orderRepository: Repository<Order>,
+    private readonly orderRepository: Repository<Order>,
+    private readonly ordemItemService: OrderItemService,
   ) {}
 
-  async createOrder(itens: CreateOrderDTO): Promise<Order> {
+  async createOrder(itens: ItemDTO[]): Promise<Order> {
     try {
-      return await this.orderRepository.save(itens);
+      const orderItens = [];
+
+      for (const item of itens) {
+        const ordemItem = await this.ordemItemService.addItem(item);
+        orderItens.push(ordemItem);
+      }
+
+      const newOrder = await this.orderRepository.save({ itens: orderItens });
+
+      return newOrder;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -23,7 +34,11 @@ export class OrderService implements IOrderService {
 
   async findAllOrder(): Promise<Order[]> {
     try {
-      return await this.orderRepository.find();
+      return await this.orderRepository.find({
+        relations: {
+          itens: true,
+        },
+      });
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }

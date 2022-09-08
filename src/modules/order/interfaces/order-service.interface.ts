@@ -1,9 +1,9 @@
-import { CreateOrderDTO } from '../dto/create-order.dto';
+import { ItemDTO } from 'modules/order-item/dto/item.dto';
 import { UpdateOrderDTO } from '../dto/update-order.dto';
 import { Order } from '../order.entity';
 
 export interface IOrderService {
-  createOrder(itens: CreateOrderDTO): Promise<Order>;
+  createOrder(itens: ItemDTO[]): Promise<Order>;
 
   findAllOrder(): Promise<Order[]>;
 
