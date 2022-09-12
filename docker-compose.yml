@@ -1,17 +1,17 @@
 version: '3.9'
 
 services:
-  pgsql:
-    image: postgres:alpine
+  database:
+    image: postgres:12
     ports:
-      - '5434:5432'
-    container_name: 'pgsql'
+      - ${DB_PORT}:5432
+    container_name: 'pizza_db'
     restart: always
     volumes:
       - pg-data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: pgpassword
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
 
   adminer:
     image: adminer
