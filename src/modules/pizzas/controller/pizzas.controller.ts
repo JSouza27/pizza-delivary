@@ -53,6 +53,6 @@ export class PizzasController {
   @Delete(':id')
   @HttpCode(200)
   async removePizza(@Param('id') id: string): Promise<boolean> {
-    return await this.pizzasService.removePizza(id);
+    return await this.pizzasService.deletePizza(id);
   }
 }

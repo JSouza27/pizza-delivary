@@ -11,5 +11,5 @@ export interface IPizzaService {
 
   updatePizza(id: string, data: UpdatePizzaDTO): Promise<Pizza>;
 
-  removePizza(id: string): Promise<boolean>;
+  deletePizza(id: string): Promise<boolean>;
 }

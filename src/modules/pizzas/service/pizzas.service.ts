@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityNotFoundError, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreatePizzaDTO } from '../dto/create-pizza.dto';
 import { UpdatePizzaDTO } from '../dto/update-pizza.dto';
 import { IPizzaService } from '../interfaces/pizza-service.interface';
@@ -13,14 +13,12 @@ export class PizzasService implements IPizzaService {
     private readonly pizzasRepository: Repository<Pizza>,
   ) {}
 
-  protected async pizzaExist(id: string) {
-    const pizza = await this.pizzasRepository.findOneBy({ id: id });
-
-    if (!pizza) {
-      throw new HttpException("Pizza doesn't exist.", HttpStatus.NOT_FOUND);
+  protected async findPizzaOrFail(id: string) {
+    try {
+      return await this.pizzasRepository.findOneByOrFail({ id });
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.NOT_FOUND);
     }
-
-    return true;
   }
 
   async createPizza(createPizzaDto: CreatePizzaDTO): Promise<Pizza> {
@@ -48,9 +46,9 @@ export class PizzasService implements IPizzaService {
 
   async findPizzaById(id: string): Promise<Pizza> {
     try {
-      return await this.pizzasRepository.findOneByOrFail({ id: id });
+      return await this.findPizzaOrFail(id);
     } catch (error) {
-      if (error instanceof EntityNotFoundError) {
+      if (error.status === 404) {
         throw new HttpException(error.message, HttpStatus.NOT_FOUND);
       }
 
@@ -59,7 +57,7 @@ export class PizzasService implements IPizzaService {
   }
 
   async updatePizza(id: string, data: UpdatePizzaDTO): Promise<Pizza> {
-    await this.pizzaExist(id);
+    await this.findPizzaOrFail(id);
     try {
       await this.pizzasRepository.update(id, { ...data });
 
@@ -71,8 +69,8 @@ export class PizzasService implements IPizzaService {
     }
   }
 
-  async removePizza(id: string): Promise<boolean> {
-    await this.pizzaExist(id);
+  async deletePizza(id: string): Promise<boolean> {
+    await this.findPizzaOrFail(id);
     try {
       await this.pizzasRepository.delete(id);
 
