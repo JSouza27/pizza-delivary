@@ -13,7 +13,7 @@ export class OrderItemService implements IOrdemItemService {
     private readonly orderItemRepository: Repository<OrderItem>,
   ) {}
 
-  async addItem(item: ItemDTO): Promise<OrderItem> {
+  async create(item: ItemDTO): Promise<OrderItem> {
     try {
       return await this.orderItemRepository.save(item);
     } catch (error) {
@@ -21,7 +21,7 @@ export class OrderItemService implements IOrdemItemService {
     }
   }
 
-  async findOrderItemById(id: string): Promise<OrderItem> {
+  async findById(id: string): Promise<OrderItem> {
     try {
       return await this.orderItemRepository.findOneByOrFail({ id: id });
     } catch (error) {
@@ -33,7 +33,7 @@ export class OrderItemService implements IOrdemItemService {
     }
   }
 
-  async updatedItem(id: string, data: UpdatedItemDTO): Promise<OrderItem> {
+  async update(id: string, data: UpdatedItemDTO): Promise<OrderItem> {
     try {
       const item = await this.orderItemRepository.findOneBy({ id: id });
 
@@ -49,7 +49,7 @@ export class OrderItemService implements IOrdemItemService {
     }
   }
 
-  async removeItem(id: string): Promise<boolean> {
+  async remove(id: string): Promise<boolean> {
     try {
       const item = await this.orderItemRepository.findOneBy({ id: id });
 

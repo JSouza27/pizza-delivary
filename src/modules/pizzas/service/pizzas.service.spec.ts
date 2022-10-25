@@ -2,15 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PizzasService } from './pizzas.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Pizza } from '../pizza.entity';
-import { CreatePizzaDTO } from '../dto/create-pizza.dto';
 import { Repository } from 'typeorm';
 import { UpdatePizzaDTO } from '../dto/update-pizza.dto';
-
-const data: CreatePizzaDTO = {
-  name: 'Diavola',
-  price: 7.5,
-  ingredients: ['tomato', 'mozzarella', 'spicy salami'],
-};
+import { pizza } from 'mock/pizza.mock';
 
 describe('PizzasService', () => {
   let service: PizzasService;
@@ -25,11 +19,11 @@ describe('PizzasService', () => {
         {
           provide: PIZZA_REPOSITORY_TOKEN,
           useValue: {
-            save: jest.fn().mockResolvedValue(data),
-            find: jest.fn().mockResolvedValue([data]),
+            save: jest.fn().mockResolvedValue(pizza),
+            find: jest.fn().mockResolvedValue([pizza]),
             findOneByOrFail: jest
               .fn()
-              .mockResolvedValue([{ ...data, id: '1' }]),
+              .mockResolvedValue([{ ...pizza, id: '1' }]),
             update: jest.fn().mockResolvedValue({
               id: '1',
               name: 'Diavola Atualizado',
@@ -52,20 +46,22 @@ describe('PizzasService', () => {
     repostory = module.get<Repository<Pizza>>(PIZZA_REPOSITORY_TOKEN);
   });
 
-  it('service should be defined', () => {
-    expect(service).toBeDefined();
-  });
+  describe('test configuration', () => {
+    it('service should be defined', () => {
+      expect(service).toBeDefined();
+    });
 
-  it('repostory should be defined', () => {
-    expect(repostory).toBeDefined();
+    it('repostory should be defined', () => {
+      expect(repostory).toBeDefined();
+    });
   });
 
   describe('Test the createPizza method', () => {
     it('should create a new pizza successfully', async () => {
-      const result = await service.createPizza(data);
+      const result = await service.createPizza(pizza);
 
       expect(repostory.save).toHaveBeenCalledTimes(1);
-      expect(result).toEqual(data);
+      expect(result).toEqual(pizza);
     });
 
     it('should return an exception if the pizza already exists', () => {
@@ -73,7 +69,7 @@ describe('PizzasService', () => {
         .spyOn(repostory, 'save')
         .mockRejectedValueOnce(new Error('already exists'));
 
-      expect(service.createPizza(data)).rejects.toThrowError();
+      expect(service.createPizza(pizza)).rejects.toThrowError();
     });
 
     it('should return an exception if it passes the wrong data', () => {
@@ -82,8 +78,8 @@ describe('PizzasService', () => {
       expect(
         service.createPizza({
           name: '',
-          ingredients: data.ingredients,
-          price: data.price,
+          ingredients: pizza.ingredients,
+          price: pizza.price,
         }),
       ).rejects.toThrowError();
     });
@@ -94,7 +90,7 @@ describe('PizzasService', () => {
       const result = await service.getAllPizzas();
 
       expect(repostory.find).toHaveBeenCalledTimes(1);
-      expect(result).toEqual([data]);
+      expect(result).toEqual([pizza]);
     });
   });
 
@@ -103,7 +99,7 @@ describe('PizzasService', () => {
       const result = await service.findPizzaById('1');
 
       expect(repostory.findOneByOrFail).toHaveBeenCalledTimes(1);
-      expect(result).toEqual([{ ...data, id: '1' }]);
+      expect(result).toEqual([{ ...pizza, id: '1' }]);
     });
 
     it("should return an exception if it doesn't find a pizza", () => {
