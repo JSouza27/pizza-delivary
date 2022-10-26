@@ -1,4 +1,4 @@
-import { Pizza } from '../pizzas/pizza.entity';
+import { Pizza } from '../../pizzas/Entity/pizza.entity';
 import {
   Column,
   Entity,
@@ -6,7 +6,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Order } from '../order/order.entity';
+import { Order } from '../../order/Entity/order.entity';
 
 @Entity('order_item')
 export class OrderItem {

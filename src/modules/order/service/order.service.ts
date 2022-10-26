@@ -1,11 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Order } from '../order.entity';
+import { Order } from '../Entity/order.entity';
 import { IOrderService } from '../interfaces/order-service.interface';
 import { UpdateOrderDTO } from '../dto/update-order.dto';
 import { OrderItemService } from '../../order-item/service/order-item.service';
-import { ItemDTO } from 'modules/order-item/dto/item.dto';
+import { ItemDTO } from '../../../modules/order-item/dto/item.dto';
 
 @Injectable()
 export class OrderService implements IOrderService {
@@ -20,7 +20,7 @@ export class OrderService implements IOrderService {
       const orderItens = [];
 
       for (const item of itens) {
-        const ordemItem = await this.ordemItemService.addItem(item);
+        const ordemItem = await this.ordemItemService.create(item);
         orderItens.push(ordemItem);
       }
 

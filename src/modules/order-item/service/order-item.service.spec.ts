@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrderItemService } from './order-item.service';
 import { Repository } from 'typeorm';
-import { OrderItem } from '../order-item.entity';
+import { OrderItem } from '../Entity/order-item.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import {
-  newOrderItem,
+  orderItem,
   OrderItemResponse,
-  OrderItemUpdated,
+  orderItemUpdated,
 } from '../../../mock/order-item.mock';
 
 describe('ServiceService', () => {
@@ -23,8 +23,9 @@ describe('ServiceService', () => {
           provide: ORDER_ITEM_REPOSITORY_TOKEN,
           useValue: {
             save: jest.fn().mockResolvedValue(OrderItemResponse),
-            findOneByOrFail: jest.fn().mockResolvedValue(OrderItemResponse),
-            update: jest.fn().mockResolvedValue(OrderItemUpdated),
+            findOneBy: jest.fn().mockResolvedValue(OrderItemResponse),
+            update: jest.fn().mockResolvedValue(orderItemUpdated),
+            delete: jest.fn().mockResolvedValue(true),
           },
         },
       ],
@@ -44,11 +45,13 @@ describe('ServiceService', () => {
     });
   });
 
-  describe('test the method that creates', () => {
+  describe('test the create method', () => {
     it('should create an order item successfully ', async () => {
-      const result = await service.create(newOrderItem);
+      const result = await service.create(orderItem);
 
       expect(repository.save).toHaveBeenCalledTimes(1);
+      expect(result).toBeInstanceOf(Object);
+      expect(result).toHaveProperty('id');
       expect(result).toEqual(OrderItemResponse);
     });
   });
@@ -57,24 +60,43 @@ describe('ServiceService', () => {
     it('should search for an item by id', async () => {
       const result = await service.findById('1');
 
-      expect(repository.findOneByOrFail).toHaveBeenCalledTimes(1);
+      expect(repository.findOneBy).toHaveBeenCalledTimes(1);
       expect(result).toEqual(OrderItemResponse);
+    });
+
+    it('should return null if not exist', async () => {
+      jest.spyOn(repository, 'findOneBy').mockResolvedValue(null);
+
+      const result = await service.findById('2');
+
+      expect(repository.findOneBy).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(null);
     });
   });
 
   describe('tests the method that update', () => {
     it('should update an order item', async () => {
+      jest.spyOn(repository, 'findOneBy').mockResolvedValue(orderItemUpdated);
+
       const data = {
-        pizza: newOrderItem.pizza,
         quantity: 1,
       };
 
       const result = await service.update('1', data);
 
       expect(repository.update).toHaveBeenCalledTimes(1);
-      expect(result).toEqual(OrderItemUpdated);
+      expect(result).toEqual(orderItemUpdated);
     });
   });
 
-  describe('', () => {});
+  describe('tests the method that delete', () => {
+    it('should return a "true" on success', async () => {
+      jest.spyOn(repository, 'findOneBy').mockResolvedValue(null);
+
+      const result = await service.delete('1');
+
+      expect(repository.delete).toHaveBeenCalledTimes(1);
+      expect(result).toBeTruthy();
+    });
+  });
 });

@@ -12,7 +12,7 @@ import { ItemDTO } from '../../order-item/dto/item.dto';
 import { OrderItemService } from '../../order-item/service/order-item.service';
 import { CreateOrderDTO } from '../dto/create-order.dto';
 import { UpdateOrderDTO } from '../dto/update-order.dto';
-import { Order } from '../order.entity';
+import { Order } from '../Entity/order.entity';
 import { OrderService } from '../service/order.service';
 
 @Controller('/api/orders')

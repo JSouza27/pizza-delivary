@@ -1,6 +1,5 @@
-import { UpdatedItemDTO } from '../modules/order-item/dto/updated-item.dto';
 import { ItemDTO } from '../modules/order-item/dto/item.dto';
-import { OrderItem } from '../modules/order-item/order-item.entity';
+import { OrderItem } from '../modules/order-item/Entity/order-item.entity';
 import { orderResponse } from './order.mock';
 import { pizzaResponse } from './pizza.mock';
 
@@ -11,14 +10,16 @@ item.order = orderResponse;
 item.pizza = pizzaResponse;
 item.quantity = 2;
 
-export const newOrderItem: ItemDTO = {
+export const orderItem: ItemDTO = {
   pizza: pizzaResponse,
   quantity: 2,
 };
 
 export const OrderItemResponse: OrderItem = item;
 
-export const OrderItemUpdated: UpdatedItemDTO = {
+export const orderItemUpdated: OrderItem = {
+  id: '1',
   pizza: item.pizza,
   quantity: 1,
+  order: orderResponse,
 };
