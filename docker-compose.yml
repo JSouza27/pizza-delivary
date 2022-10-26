@@ -1,23 +1,33 @@
 version: '3.9'
 
 services:
-  database:
+  app:
+    container_name: pizza_delivery_api
+    build: .
+    entrypoint: ./.docker/entrypoint.sh
+    ports:
+      - ${API_PORT}:3000
+    volumes:
+      - .:/home/node/app
+    depends_on:
+      - db
+
+  db:
     image: postgres:12
     ports:
-      - ${DB_PORT}:5432
+      - 5432:5432
     container_name: 'pizza_db'
     restart: always
-    volumes:
-      - pg-data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
 
   adminer:
     image: adminer
     restart: always
     ports:
       - 8080:8080
-
-volumes:
-  pg-data:
+    environment:
+      PGADMIN_DEFAULT_EMAIL: root
+      PGADMIN_DEFAULT_PASSWORD: pgadmin12
