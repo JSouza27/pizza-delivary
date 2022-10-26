@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { PizzasService } from './service/pizzas.service';
 import { PizzasController } from './controller/pizzas.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Pizza } from './pizza.entity';
+import { Pizza } from './Entity/pizza.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Pizza])],
