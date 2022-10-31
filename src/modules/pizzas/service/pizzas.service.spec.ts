@@ -13,7 +13,7 @@ import {
 
 describe('PizzasService', () => {
   let service: PizzasService;
-  let repostory: Repository<Pizza>;
+  let repository: Repository<Pizza>;
 
   const PIZZA_REPOSITORY_TOKEN = getRepositoryToken(Pizza);
 
@@ -35,7 +35,7 @@ describe('PizzasService', () => {
     }).compile();
 
     service = module.get<PizzasService>(PizzasService);
-    repostory = module.get<Repository<Pizza>>(PIZZA_REPOSITORY_TOKEN);
+    repository = module.get<Repository<Pizza>>(PIZZA_REPOSITORY_TOKEN);
   });
 
   describe('test configuration', () => {
@@ -44,7 +44,7 @@ describe('PizzasService', () => {
     });
 
     it('repostory should be defined', () => {
-      expect(repostory).toBeDefined();
+      expect(repository).toBeDefined();
     });
   });
 
@@ -52,7 +52,7 @@ describe('PizzasService', () => {
     it('should create a new pizza successfully', async () => {
       const result = await service.create(pizza);
 
-      expect(repostory.save).toHaveBeenCalledTimes(1);
+      expect(repository.save).toHaveBeenCalledTimes(1);
       expect(result).toBeInstanceOf(Object);
       expect(result).toHaveProperty('id');
       expect(result).toEqual(pizzaResponse);
@@ -63,7 +63,7 @@ describe('PizzasService', () => {
     it('should return all pizzas', async () => {
       const result = await service.findAll();
 
-      expect(repostory.find).toHaveBeenCalledTimes(1);
+      expect(repository.find).toHaveBeenCalledTimes(1);
       expect(result).toBeInstanceOf(Array);
       expect(result).toHaveLength(1);
       expect(result).toEqual([pizzaResponse]);
@@ -74,7 +74,7 @@ describe('PizzasService', () => {
     it('should return one pizza by id', async () => {
       const result = await service.findById('1');
 
-      expect(repostory.findOneBy).toHaveBeenCalledTimes(1);
+      expect(repository.findOneBy).toHaveBeenCalledTimes(1);
       expect(result).toBeInstanceOf(Object);
       expect(result).toHaveProperty('id');
       expect(result).toHaveProperty('name');
@@ -84,33 +84,33 @@ describe('PizzasService', () => {
     });
 
     it('should return null if the pizza does not exist', async () => {
-      jest.spyOn(repostory, 'findOneBy').mockResolvedValue(null);
+      jest.spyOn(repository, 'findOneBy').mockResolvedValue(null);
 
       const result = await service.findById('2');
 
-      expect(repostory.findOneBy).toHaveBeenCalledTimes(1);
+      expect(repository.findOneBy).toHaveBeenCalledTimes(1);
       expect(result).toEqual(null);
     });
   });
 
   describe('Test the update method', () => {
     it('should return updated pizza', async () => {
-      jest.spyOn(repostory, 'findOneBy').mockResolvedValue(updateData);
+      jest.spyOn(repository, 'findOneBy').mockResolvedValue(updateData);
 
       const result = await service.update('1', updatePizza);
 
-      expect(repostory.update).toHaveBeenCalledTimes(1);
+      expect(repository.update).toHaveBeenCalledTimes(1);
       expect(result).toEqual(updateData);
     });
   });
 
   describe('Test the removePizza method', () => {
     it('should delete a pizza with successfully', async () => {
-      jest.spyOn(repostory, 'findOneBy').mockResolvedValueOnce(null);
+      jest.spyOn(repository, 'findOneBy').mockResolvedValueOnce(null);
 
       const result = await service.delete('1');
 
-      expect(repostory.delete).toHaveBeenCalledTimes(1);
+      expect(repository.delete).toHaveBeenCalledTimes(1);
       expect(result).toBeTruthy();
     });
   });

@@ -15,3 +15,7 @@ orderItem.id = '1';
 orderItem.order = orderResponse;
 orderItem.pizza = pizzaResponse;
 orderItem.quantity = 1;
+
+export const orderUpdatedResponse = orderResponse;
+
+orderUpdatedResponse.itens[0].quantity = 2;
