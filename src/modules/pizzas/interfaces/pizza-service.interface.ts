@@ -1,15 +1,15 @@
 import { CreatePizzaDTO } from '../dto/create-pizza.dto';
 import { UpdatePizzaDTO } from '../dto/update-pizza.dto';
-import { Pizza } from '../pizza.entity';
+import { Pizza } from '../Entity/pizza.entity';
 
 export interface IPizzaService {
-  createPizza(createPizzaDto: CreatePizzaDTO): Promise<Pizza>;
+  create(createPizzaDto: CreatePizzaDTO): Promise<Pizza>;
 
-  getAllPizzas(): Promise<Pizza[]>;
+  findAll(): Promise<Pizza[]>;
 
-  findPizzaById(id: string): Promise<Pizza>;
+  findById(id: string): Promise<Pizza>;
 
-  updatePizza(id: string, data: UpdatePizzaDTO): Promise<Pizza>;
+  update(id: string, data: UpdatePizzaDTO): Promise<Pizza>;
 
-  deletePizza(id: string): Promise<boolean>;
+  delete(id: string): Promise<boolean>;
 }

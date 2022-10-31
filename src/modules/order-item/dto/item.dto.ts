@@ -1,5 +1,5 @@
 import { IsNotEmpty, Min, ValidateNested } from 'class-validator';
-import { Pizza } from '../../pizzas/pizza.entity';
+import { Pizza } from '../../pizzas/Entity/pizza.entity';
 
 export class ItemDTO {
   @ValidateNested({ message: 'It is necessary to add a pizza.' })

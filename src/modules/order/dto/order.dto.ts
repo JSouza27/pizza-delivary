@@ -1,4 +1,4 @@
-import { ItemDTO } from 'modules/order-item/dto/item.dto';
+import { ItemDTO } from '../../../modules/order-item/dto/item.dto';
 
 export class OrderDTO {
   id: number;

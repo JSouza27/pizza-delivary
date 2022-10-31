@@ -1,20 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PizzasService } from './pizzas.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Pizza } from '../pizza.entity';
-import { CreatePizzaDTO } from '../dto/create-pizza.dto';
+import { Pizza } from '../Entity/pizza.entity';
 import { Repository } from 'typeorm';
 import { UpdatePizzaDTO } from '../dto/update-pizza.dto';
-
-const data: CreatePizzaDTO = {
-  name: 'Diavola',
-  price: 7.5,
-  ingredients: ['tomato', 'mozzarella', 'spicy salami'],
-};
+import {
+  pizza,
+  pizzaResponse,
+  updateData,
+  updatePizza,
+} from '../../../mock/pizza.mock';
 
 describe('PizzasService', () => {
   let service: PizzasService;
-  let repostory: Repository<Pizza>;
+  let repository: Repository<Pizza>;
 
   const PIZZA_REPOSITORY_TOKEN = getRepositoryToken(Pizza);
 
@@ -25,126 +24,94 @@ describe('PizzasService', () => {
         {
           provide: PIZZA_REPOSITORY_TOKEN,
           useValue: {
-            save: jest.fn().mockResolvedValue(data),
-            find: jest.fn().mockResolvedValue([data]),
-            findOneByOrFail: jest
-              .fn()
-              .mockResolvedValue([{ ...data, id: '1' }]),
-            update: jest.fn().mockResolvedValue({
-              id: '1',
-              name: 'Diavola Atualizado',
-              price: 7.5,
-              ingredients: ['tomato', 'mozzarella', 'spicy salami'],
-            }),
-            findOneBy: jest.fn().mockResolvedValue({
-              id: '1',
-              name: 'Diavola',
-              price: 7.5,
-              ingredients: ['tomato', 'mozzarella', 'spicy salami'],
-            }),
-            delete: jest.fn().mockResolvedValue(undefined),
+            save: jest.fn().mockResolvedValue(pizzaResponse),
+            find: jest.fn().mockResolvedValue([pizzaResponse]),
+            update: jest.fn().mockResolvedValue(updateData),
+            findOneBy: jest.fn().mockResolvedValue(pizzaResponse),
+            delete: jest.fn().mockResolvedValue(true),
           },
         },
       ],
     }).compile();
 
     service = module.get<PizzasService>(PizzasService);
-    repostory = module.get<Repository<Pizza>>(PIZZA_REPOSITORY_TOKEN);
+    repository = module.get<Repository<Pizza>>(PIZZA_REPOSITORY_TOKEN);
   });
 
-  it('service should be defined', () => {
-    expect(service).toBeDefined();
+  describe('test configuration', () => {
+    it('service should be defined', () => {
+      expect(service).toBeDefined();
+    });
+
+    it('repostory should be defined', () => {
+      expect(repository).toBeDefined();
+    });
   });
 
-  it('repostory should be defined', () => {
-    expect(repostory).toBeDefined();
-  });
-
-  describe('Test the createPizza method', () => {
+  describe('Test the create method', () => {
     it('should create a new pizza successfully', async () => {
-      const result = await service.createPizza(data);
+      const result = await service.create(pizza);
 
-      expect(repostory.save).toHaveBeenCalledTimes(1);
-      expect(result).toEqual(data);
-    });
-
-    it('should return an exception if the pizza already exists', () => {
-      jest
-        .spyOn(repostory, 'save')
-        .mockRejectedValueOnce(new Error('already exists'));
-
-      expect(service.createPizza(data)).rejects.toThrowError();
-    });
-
-    it('should return an exception if it passes the wrong data', () => {
-      jest.spyOn(repostory, 'save').mockRejectedValueOnce(new Error());
-
-      expect(
-        service.createPizza({
-          name: '',
-          ingredients: data.ingredients,
-          price: data.price,
-        }),
-      ).rejects.toThrowError();
+      expect(repository.save).toHaveBeenCalledTimes(1);
+      expect(result).toBeInstanceOf(Object);
+      expect(result).toHaveProperty('id');
+      expect(result).toEqual(pizzaResponse);
     });
   });
 
-  describe('Test the getAllPizzas method', () => {
+  describe('Test the findAll method', () => {
     it('should return all pizzas', async () => {
-      const result = await service.getAllPizzas();
+      const result = await service.findAll();
 
-      expect(repostory.find).toHaveBeenCalledTimes(1);
-      expect(result).toEqual([data]);
+      expect(repository.find).toHaveBeenCalledTimes(1);
+      expect(result).toBeInstanceOf(Array);
+      expect(result).toHaveLength(1);
+      expect(result).toEqual([pizzaResponse]);
     });
   });
 
-  describe('Test the findPizzaById method', () => {
+  describe('Test the findById method', () => {
     it('should return one pizza by id', async () => {
-      const result = await service.findPizzaById('1');
+      const result = await service.findById('1');
 
-      expect(repostory.findOneByOrFail).toHaveBeenCalledTimes(1);
-      expect(result).toEqual([{ ...data, id: '1' }]);
+      expect(repository.findOneBy).toHaveBeenCalledTimes(1);
+      expect(result).toBeInstanceOf(Object);
+      expect(result).toHaveProperty('id');
+      expect(result).toHaveProperty('name');
+      expect(result).toHaveProperty('price');
+      expect(result).toHaveProperty('ingredients');
+      expect(result).toEqual(pizzaResponse);
     });
 
-    it("should return an exception if it doesn't find a pizza", () => {
-      jest
-        .spyOn(repostory, 'findOneByOrFail')
-        .mockRejectedValueOnce(new Error());
+    it('should return null if the pizza does not exist', async () => {
+      jest.spyOn(repository, 'findOneBy').mockResolvedValue(null);
 
-      expect(service.findPizzaById('100')).rejects.toThrowError();
+      const result = await service.findById('2');
+
+      expect(repository.findOneBy).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(null);
     });
   });
 
-  describe('Test the updatePizza method', () => {
+  describe('Test the update method', () => {
     it('should return updated pizza', async () => {
-      const update: UpdatePizzaDTO = {
-        name: 'Diavola Atualizado',
-      };
+      jest.spyOn(repository, 'findOneBy').mockResolvedValue(updateData);
 
-      const updateData = {
-        id: '1',
-        name: 'Diavola Atualizado',
-        price: 7.5,
-        ingredients: ['tomato', 'mozzarella', 'spicy salami'],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+      const result = await service.update('1', updatePizza);
 
-      jest.spyOn(repostory, 'findOneBy').mockResolvedValue(updateData);
-
-      const result = await service.updatePizza('1', update);
-
-      expect(repostory.update).toHaveBeenCalledTimes(1);
+      expect(repository.update).toHaveBeenCalledTimes(1);
       expect(result).toEqual(updateData);
     });
   });
 
   describe('Test the removePizza method', () => {
     it('should delete a pizza with successfully', async () => {
-      const result = await service.deletePizza('1');
+      jest.spyOn(repository, 'findOneBy').mockResolvedValueOnce(null);
 
-      expect(repostory.delete).toHaveBeenCalledTimes(1);
-      expect(result).toBeUndefined();
+      const result = await service.delete('1');
+
+      expect(repository.delete).toHaveBeenCalledTimes(1);
+      expect(result).toBeTruthy();
     });
   });
 });

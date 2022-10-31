@@ -1,13 +1,13 @@
 import { ItemDTO } from '../dto/item.dto';
 import { UpdatedItemDTO } from '../dto/updated-item.dto';
-import { OrderItem } from '../order-item.entity';
+import { OrderItem } from '../Entity/order-item.entity';
 
 export interface IOrdemItemService {
-  addItem(item: ItemDTO): Promise<OrderItem>;
+  create(item: ItemDTO): Promise<OrderItem>;
 
-  findOrderItemById(id: string): Promise<OrderItem>;
+  findById(id: string): Promise<OrderItem>;
 
-  updatedItem(id: string, data: UpdatedItemDTO): Promise<OrderItem>;
+  update(id: string, data: UpdatedItemDTO): Promise<OrderItem>;
 
-  removeItem(id: string): Promise<boolean>;
+  delete(id: string): Promise<boolean>;
 }

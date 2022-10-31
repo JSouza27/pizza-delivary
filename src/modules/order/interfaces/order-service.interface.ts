@@ -1,15 +1,12 @@
-import { ItemDTO } from 'modules/order-item/dto/item.dto';
-import { UpdateOrderDTO } from '../dto/update-order.dto';
-import { Order } from '../order.entity';
+import { ItemDTO } from '../../../modules/order-item/dto/item.dto';
+import { Order } from '../Entity/order.entity';
 
 export interface IOrderService {
-  createOrder(itens: ItemDTO[]): Promise<Order>;
+  create(itens: ItemDTO[]): Promise<Order>;
 
-  findAllOrder(): Promise<Order[]>;
+  findAll(): Promise<Order[]>;
 
-  findOrderById(id: number): Promise<Order | []>;
+  findById(id: number): Promise<Order | []>;
 
-  updateOrderById(id: number, data: UpdateOrderDTO): Promise<Order>;
-
-  removeOrderById(id: number): Promise<boolean>;
+  delete(id: number): Promise<boolean>;
 }

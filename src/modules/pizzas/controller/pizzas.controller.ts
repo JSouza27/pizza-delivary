@@ -11,10 +11,10 @@ import {
 } from '@nestjs/common';
 import { CreatePizzaDTO } from '../dto/create-pizza.dto';
 import { UpdatePizzaDTO } from '../dto/update-pizza.dto';
-import { Pizza } from '../pizza.entity';
+import { Pizza } from '../Entity/pizza.entity';
 import { PizzasService } from '../service/pizzas.service';
 
-@Controller('/api/pizzas')
+@Controller('/api/pizza')
 export class PizzasController {
   constructor(private pizzasService: PizzasService) {}
 
@@ -23,21 +23,21 @@ export class PizzasController {
   async createPizzas(
     @Body(ValidationPipe) createPizzaDto: CreatePizzaDTO,
   ): Promise<Pizza> {
-    const pizza = await this.pizzasService.createPizza(createPizzaDto);
+    const pizza = await this.pizzasService.create(createPizzaDto);
     return pizza;
   }
 
   @Get()
   @HttpCode(200)
   async getAllPizzas(): Promise<Pizza[]> {
-    const pizzas = await this.pizzasService.getAllPizzas();
+    const pizzas = await this.pizzasService.findAll();
     return pizzas;
   }
 
   @Get(':id')
   @HttpCode(200)
   async findPizzaById(@Param('id') id: string): Promise<Pizza> {
-    const pizza = await this.pizzasService.findPizzaById(id);
+    const pizza = await this.pizzasService.findById(id);
     return pizza;
   }
 
@@ -47,12 +47,12 @@ export class PizzasController {
     @Param('id') id: string,
     @Body(ValidationPipe) UpdatePizzaDto: UpdatePizzaDTO,
   ): Promise<Pizza> {
-    return await this.pizzasService.updatePizza(id, UpdatePizzaDto);
+    return await this.pizzasService.update(id, UpdatePizzaDto);
   }
 
   @Delete(':id')
   @HttpCode(200)
   async removePizza(@Param('id') id: string): Promise<boolean> {
-    return await this.pizzasService.deletePizza(id);
+    return await this.pizzasService.delete(id);
   }
 }

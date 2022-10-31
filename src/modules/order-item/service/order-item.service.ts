@@ -1,10 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityNotFoundError, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { ItemDTO } from '../dto/item.dto';
 import { UpdatedItemDTO } from '../dto/updated-item.dto';
 import { IOrdemItemService } from '../interfaces/order-item-service.interface';
-import { OrderItem } from '../order-item.entity';
+import { OrderItem } from '../Entity/order-item.entity';
 
 @Injectable()
 export class OrderItemService implements IOrdemItemService {
@@ -13,59 +13,31 @@ export class OrderItemService implements IOrdemItemService {
     private readonly orderItemRepository: Repository<OrderItem>,
   ) {}
 
-  async addItem(item: ItemDTO): Promise<OrderItem> {
-    try {
-      return await this.orderItemRepository.save(item);
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+  async create(item: ItemDTO): Promise<OrderItem> {
+    return await this.orderItemRepository.save(item);
   }
 
-  async findOrderItemById(id: string): Promise<OrderItem> {
-    try {
-      return await this.orderItemRepository.findOneByOrFail({ id: id });
-    } catch (error) {
-      if (error instanceof EntityNotFoundError) {
-        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
-      }
-
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+  async findById(id: string): Promise<OrderItem> {
+    return await this.orderItemRepository.findOneBy({ id: id });
   }
 
-  async updatedItem(id: string, data: UpdatedItemDTO): Promise<OrderItem> {
-    try {
-      const item = await this.orderItemRepository.findOneBy({ id: id });
+  async update(id: string, data: UpdatedItemDTO): Promise<OrderItem> {
+    await this.orderItemRepository.update(id, data);
 
-      if (!item) {
-        throw new HttpException('Item não existe.', HttpStatus.NOT_FOUND);
-      }
+    const orderItem = await this.orderItemRepository.findOneBy({ id: id });
 
-      await this.orderItemRepository.update(id, data);
-
-      return await this.orderItemRepository.findOneBy({ id: id });
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return orderItem;
   }
 
-  async removeItem(id: string): Promise<boolean> {
-    try {
-      const item = await this.orderItemRepository.findOneBy({ id: id });
+  async delete(id: string): Promise<boolean> {
+    await this.orderItemRepository.delete({ id: id });
 
-      if (!item) {
-        throw new HttpException('Item não existe.', HttpStatus.NOT_FOUND);
-      }
+    const isItem = await this.orderItemRepository.findOneBy({ id: id });
 
-      await this.orderItemRepository.delete({ id: id });
-
-      const isItem = await this.orderItemRepository.findOneBy({ id: id });
-
-      if (!isItem) {
-        return true;
-      }
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    if (!isItem) {
+      return true;
     }
+
+    return false;
   }
 }

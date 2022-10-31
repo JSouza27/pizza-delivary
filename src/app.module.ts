@@ -9,9 +9,9 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
     TypeOrmModule.forRootAsync(typeOrmConfigAsync),
-    OrderModule,
-    PizzasModule,
     OrderItemModule,
+    PizzasModule,
+    OrderModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
