@@ -5,6 +5,7 @@ import { ItemDTO } from '../dto/item.dto';
 import { UpdatedItemDTO } from '../dto/updated-item.dto';
 import { IOrdemItemService } from '../interfaces/order-item-service.interface';
 import { OrderItem } from '../Entity/order-item.entity';
+import { OrderItemResponseDTO } from '../dto/order-item-response.dto';
 
 @Injectable()
 export class OrderItemService implements IOrdemItemService {
@@ -13,12 +14,32 @@ export class OrderItemService implements IOrdemItemService {
     private readonly orderItemRepository: Repository<OrderItem>,
   ) {}
 
-  async create(item: ItemDTO): Promise<OrderItem> {
-    return await this.orderItemRepository.save(item);
+  async create(item: ItemDTO): Promise<OrderItemResponseDTO> {
+    const result = await this.orderItemRepository.save(item);
+
+    const responseDTO = new OrderItemResponseDTO(
+      result.id,
+      result.quantity,
+      result.pizza,
+      result.order.id,
+    );
+
+    return responseDTO;
   }
 
-  async findById(id: string): Promise<OrderItem> {
-    return await this.orderItemRepository.findOneBy({ id: id });
+  async findById(id: string): Promise<OrderItemResponseDTO | null> {
+    const item = await this.orderItemRepository.findOneBy({ id: id });
+
+    if (!item) return null;
+
+    const responseDTO = new OrderItemResponseDTO(
+      item.id,
+      item.quantity,
+      item.pizza,
+      item.order.id,
+    );
+
+    return responseDTO;
   }
 
   async update(id: string, data: UpdatedItemDTO): Promise<OrderItem> {

@@ -7,6 +7,7 @@ import {
   orderItem,
   OrderItemResponse,
   orderItemUpdated,
+  responseDTO,
 } from '../../../mock/order-item.mock';
 
 describe('ServiceService', () => {
@@ -22,7 +23,7 @@ describe('ServiceService', () => {
         {
           provide: ORDER_ITEM_REPOSITORY_TOKEN,
           useValue: {
-            save: jest.fn().mockResolvedValue(OrderItemResponse),
+            save: jest.fn().mockResolvedValue(responseDTO),
             findOneBy: jest.fn().mockResolvedValue(OrderItemResponse),
             update: jest.fn().mockResolvedValue(orderItemUpdated),
             delete: jest.fn().mockResolvedValue(true),
@@ -46,13 +47,13 @@ describe('ServiceService', () => {
   });
 
   describe('test the create method', () => {
-    it('should create an order item successfully ', async () => {
+    it('should create an item successfully ', async () => {
       const result = await service.create(orderItem);
 
       expect(repository.save).toHaveBeenCalledTimes(1);
       expect(result).toBeInstanceOf(Object);
       expect(result).toHaveProperty('id');
-      expect(result).toEqual(OrderItemResponse);
+      expect(result).toEqual(responseDTO);
     });
   });
 
