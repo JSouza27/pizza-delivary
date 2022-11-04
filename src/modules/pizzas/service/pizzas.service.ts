@@ -15,15 +15,15 @@ export class PizzasService implements IPizzaService {
   ) {}
 
   async create(createPizzaDto: CreatePizzaDTO): Promise<Pizza> {
-    return await this.pizzasRepository.save(createPizzaDto);
+    return this.pizzasRepository.save(createPizzaDto);
   }
 
   async findAll(): Promise<Pizza[]> {
-    return await this.pizzasRepository.find();
+    return this.pizzasRepository.find();
   }
 
   async findById(id: string): Promise<Pizza> {
-    return await this.pizzasRepository.findOneBy({ id: id });
+    return this.pizzasRepository.findOneBy({ id: id });
   }
 
   async update(id: string, data: UpdatePizzaDTO): Promise<Pizza> {
@@ -33,7 +33,7 @@ export class PizzasService implements IPizzaService {
       throw new HttpException(`Pizza doesn't exist`, HttpStatus.NOT_FOUND);
     }
 
-    return await this.pizzasRepository.save({ ...pizza, ...data });
+    return this.pizzasRepository.save({ ...pizza, ...data });
   }
 
   async delete(id: string): Promise<DeletePizzaResponseDTO> {
