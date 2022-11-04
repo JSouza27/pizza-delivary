@@ -53,8 +53,8 @@ export class PizzasService implements IPizzaService {
     }
 
     throw new HttpException(
-      'There was a problem deleting the pizza',
-      HttpStatus.FORBIDDEN,
+      'There was a problem deleting the item',
+      HttpStatus.BAD_REQUEST,
     );
   }
 }

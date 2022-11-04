@@ -7,6 +7,7 @@ import {
   Param,
   Post,
 } from '@nestjs/common';
+import { ItemCreateResponseDTO } from '../dto/item-create-response.dto';
 import { ItemDTO } from '../dto/item.dto';
 import { OrderItemResponseDTO } from '../dto/order-item-response.dto';
 import { OrderItemService } from '../service/order-item.service';
@@ -27,7 +28,7 @@ export class OrderItemController {
   }
 
   @Post()
-  async create(@Body() item: ItemDTO): Promise<OrderItemResponseDTO> {
+  async create(@Body() item: ItemDTO): Promise<ItemCreateResponseDTO> {
     return this.orderItemService.create(item);
   }
 }

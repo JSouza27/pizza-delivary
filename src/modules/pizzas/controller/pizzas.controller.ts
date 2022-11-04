@@ -37,6 +37,8 @@ export class PizzasController {
   @Get(':id')
   @HttpCode(200)
   async findById(@Param('id') id: string): Promise<Pizza> {
+    console.log(id);
+
     const pizza = await this.pizzasService.findById(id);
 
     if (!pizza) {

@@ -113,7 +113,9 @@ describe('PizzasController', () => {
     it('should return an exception if the pizza does not exist', async () => {
       jest.spyOn(service, 'findById').mockResolvedValueOnce(null);
 
-      expect(controller.findById('2')).rejects.toThrow(HttpException);
+      const data = updatePizza;
+
+      expect(controller.update('2', data)).rejects.toThrow(HttpException);
       expect(service.findById).toHaveBeenCalledTimes(1);
     });
   });
