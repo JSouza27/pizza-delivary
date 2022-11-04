@@ -3,12 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreatePizzaDTO } from '../dto/create-pizza.dto';
 import { UpdatePizzaDTO } from '../dto/update-pizza.dto';
-import { IPizzaService } from '../interfaces/pizza-service.interface';
 import { Pizza } from '../Entity/pizza.entity';
 import { DeletePizzaResponseDTO } from '../dto/delete-pizza-response.dto';
 
 @Injectable()
-export class PizzasService implements IPizzaService {
+export class PizzasService {
   constructor(
     @InjectRepository(Pizza)
     private readonly pizzasRepository: Repository<Pizza>,
