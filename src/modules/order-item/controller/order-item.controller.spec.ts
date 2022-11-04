@@ -38,7 +38,9 @@ describe('ControllerController', () => {
 
   describe('test the findById method', () => {
     it('should return an object with the information of the item', async () => {
-      const result = await controller.findById('1');
+      const result = await controller.findById(
+        '3b2a63ca-75b3-4ed4-8f52-7bee8933d814',
+      );
 
       expect(service.findById).toHaveBeenCalledTimes(1);
       expect(result).toBeInstanceOf(Object);
