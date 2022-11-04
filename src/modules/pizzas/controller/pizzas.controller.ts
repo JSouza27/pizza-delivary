@@ -37,8 +37,6 @@ export class PizzasController {
   @Get(':id')
   @HttpCode(200)
   async findById(@Param('id') id: string): Promise<Pizza> {
-    console.log(id);
-
     const pizza = await this.pizzasService.findById(id);
 
     if (!pizza) {
@@ -54,12 +52,12 @@ export class PizzasController {
     @Param('id') id: string,
     @Body() UpdatePizzaDto: UpdatePizzaDTO,
   ): Promise<Pizza> {
-    return await this.pizzasService.update(id, UpdatePizzaDto);
+    return this.pizzasService.update(id, UpdatePizzaDto);
   }
 
   @Delete(':id')
   @HttpCode(200)
   async delete(@Param('id') id: string): Promise<DeletePizzaResponseDTO> {
-    return await this.pizzasService.delete(id);
+    return this.pizzasService.delete(id);
   }
 }
