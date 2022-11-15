@@ -20,7 +20,10 @@ export class OrderItem {
   @Column({ nullable: false })
   quantity: number;
 
-  @ManyToOne(() => Order, (order: Order) => order.itens)
+  @ManyToOne(() => Order, (order: Order) => order.itens, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @JoinColumn({ name: 'order_id' })
   order: Order;
 }

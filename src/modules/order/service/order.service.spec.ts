@@ -1,8 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { OrderItemResponse } from '../../../mock/order-item.mock';
-import { orderResponse, orderUpdatedResponse } from '../../../mock/order.mock';
+import { responseDTO } from '../../../mock/order-item.mock';
+import {
+  item,
+  orderResponseDTO,
+  updatedOrderResponse,
+} from '../../../mock/order.mock';
 import { OrderItem } from '../../order-item/Entity/order-item.entity';
 import { OrderItemService } from '../../order-item/service/order-item.service';
 import { Order } from '../Entity/order.entity';
@@ -25,17 +29,20 @@ describe('ServiceService', () => {
         {
           provide: ORDER_REPOSITORY_TOKEN,
           useValue: {
-            save: jest.fn().mockResolvedValue(orderResponse),
-            find: jest.fn().mockResolvedValue([orderResponse]),
-            findOneBy: jest.fn().mockResolvedValue(orderResponse),
-            update: jest.fn().mockResolvedValue(orderUpdatedResponse),
-            delete: jest.fn().mockResolvedValue(undefined),
+            save: jest.fn().mockResolvedValue(orderResponseDTO),
+            find: jest.fn().mockResolvedValue([orderResponseDTO]),
+            findOne: jest.fn().mockResolvedValue(orderResponseDTO),
+            update: jest.fn().mockResolvedValue(updatedOrderResponse),
+            delete: jest.fn().mockResolvedValue({
+              raw: [],
+              affected: 1,
+            }),
           },
         },
         {
           provide: ORDER_ITEM_REPOSITORY_TOKEN,
           useValue: {
-            save: jest.fn().mockResolvedValue(OrderItemResponse),
+            save: jest.fn().mockResolvedValue(responseDTO),
           },
         },
       ],
@@ -69,13 +76,13 @@ describe('ServiceService', () => {
 
   describe('test the create method', () => {
     it('should create an order successfully ', async () => {
-      const result = await orderService.create([OrderItemResponse]);
+      const result = await orderService.create(item);
 
       expect(orderItemRepository.save).toHaveBeenCalledTimes(1);
       expect(orderRepository.save).toHaveBeenCalledTimes(1);
       expect(result).toBeInstanceOf(Object);
       expect(result).toHaveProperty('id');
-      expect(result).toEqual(orderResponse);
+      expect(result).toEqual(orderResponseDTO);
     });
   });
 
@@ -85,35 +92,39 @@ describe('ServiceService', () => {
 
       expect(orderRepository.find).toHaveBeenCalledTimes(1);
       expect(result).toBeInstanceOf(Array);
-      expect(result).toEqual([orderResponse]);
+      expect(result).toEqual([orderResponseDTO]);
     });
   });
 
   describe('tests the method that findById', () => {
     it('should search for an order by id', async () => {
-      const result = await orderService.findById(1);
+      const result = await orderService.findById(
+        'f364e356-b100-45b9-a7f8-dd4d682427f8',
+      );
 
-      expect(orderRepository.findOneBy).toHaveBeenCalledTimes(1);
-      expect(result).toEqual(orderResponse);
+      expect(orderRepository.findOne).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(orderResponseDTO);
     });
 
     it('should return null if not exist', async () => {
-      jest.spyOn(orderRepository, 'findOneBy').mockResolvedValue(null);
+      jest.spyOn(orderRepository, 'findOne').mockResolvedValue(null);
 
-      const result = await orderService.findById(2);
+      const result = await orderService.findById('2');
 
-      expect(orderRepository.findOneBy).toHaveBeenCalledTimes(1);
+      expect(orderRepository.findOne).toHaveBeenCalledTimes(1);
       expect(result).toEqual(null);
     });
   });
 
   describe('tests the method that delete', () => {
     it('should be successfully removed', async () => {
-      jest.spyOn(orderRepository, 'findOneBy').mockResolvedValue(null);
+      jest.spyOn(orderRepository, 'findOne').mockResolvedValue(null);
 
-      const result = await orderService.delete(1);
+      const result = await orderService.delete(
+        'f364e356-b100-45b9-a7f8-dd4d682427f8',
+      );
 
-      expect(orderRepository.findOneBy).toHaveBeenCalledTimes(1);
+      expect(orderRepository.findOne).toHaveBeenCalledTimes(1);
       expect(result).toBeTruthy();
     });
   });

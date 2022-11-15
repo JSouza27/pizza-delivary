@@ -1,47 +1,59 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreatePizzaDTO } from '../dto/create-pizza.dto';
 import { UpdatePizzaDTO } from '../dto/update-pizza.dto';
-import { IPizzaService } from '../interfaces/pizza-service.interface';
 import { Pizza } from '../Entity/pizza.entity';
+import { DeletePizzaResponseDTO } from '../dto/delete-pizza-response.dto';
 
 @Injectable()
-export class PizzasService implements IPizzaService {
+export class PizzasService {
   constructor(
     @InjectRepository(Pizza)
     private readonly pizzasRepository: Repository<Pizza>,
   ) {}
 
   async create(createPizzaDto: CreatePizzaDTO): Promise<Pizza> {
-    return await this.pizzasRepository.save(createPizzaDto);
+    return this.pizzasRepository.save(createPizzaDto);
   }
 
   async findAll(): Promise<Pizza[]> {
-    return await this.pizzasRepository.find();
+    return this.pizzasRepository.find();
   }
 
   async findById(id: string): Promise<Pizza> {
-    return await this.pizzasRepository.findOneBy({ id: id });
+    return this.pizzasRepository.findOneBy({ id: id });
   }
 
   async update(id: string, data: UpdatePizzaDTO): Promise<Pizza> {
-    await this.pizzasRepository.update(id, { ...data });
-
-    const updated = await this.pizzasRepository.findOneBy({ id: id });
-
-    return updated;
-  }
-
-  async delete(id: string): Promise<boolean> {
-    await this.pizzasRepository.delete(id);
-
-    const pizza = await this.pizzasRepository.findOneBy({ id: id });
+    const pizza = await this.findById(id);
 
     if (!pizza) {
-      return true;
+      throw new HttpException(`Pizza doesn't exist`, HttpStatus.NOT_FOUND);
     }
 
-    return false;
+    return this.pizzasRepository.save({ ...pizza, ...data });
+  }
+
+  async delete(id: string): Promise<DeletePizzaResponseDTO> {
+    const pizza = await this.findById(id);
+
+    if (!pizza) {
+      throw new HttpException(`Pizza doesn't exist`, HttpStatus.NOT_FOUND);
+    }
+
+    const response = await this.pizzasRepository.delete(id);
+
+    if (!!response.affected) {
+      return {
+        statusCode: 200,
+        message: 'Pizza successfully deleted',
+      };
+    }
+
+    throw new HttpException(
+      'There was a problem deleting the item',
+      HttpStatus.BAD_REQUEST,
+    );
   }
 }

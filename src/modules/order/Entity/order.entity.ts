@@ -1,5 +1,6 @@
 import { OrderItem } from '../../order-item/Entity/order-item.entity';
 import {
+  Column,
   CreateDateColumn,
   Entity,
   OneToMany,
@@ -8,11 +9,17 @@ import {
 
 @Entity()
 export class Order {
-  @PrimaryGeneratedColumn('increment')
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @OneToMany((type) => OrderItem, (orderItens: OrderItem) => orderItens.order)
+  @OneToMany((type) => OrderItem, (orderItens: OrderItem) => orderItens.order, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   itens: OrderItem[];
+
+  @Column({ type: 'decimal', precision: 2 })
+  totalOrder: number;
 
   @CreateDateColumn()
   createdAt: Date;

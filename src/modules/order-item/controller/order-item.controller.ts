@@ -1,6 +1,15 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+} from '@nestjs/common';
+import { ItemCreateResponseDTO } from '../dto/item-create-response.dto';
 import { ItemDTO } from '../dto/item.dto';
-import { OrderItem } from '../Entity/order-item.entity';
+import { OrderItemResponseDTO } from '../dto/order-item-response.dto';
 import { OrderItemService } from '../service/order-item.service';
 
 @Controller('/api/item')
@@ -8,12 +17,18 @@ export class OrderItemController {
   constructor(private orderItemService: OrderItemService) {}
 
   @Get(':id')
-  async findOrderItemById(@Param('id') id: string) {
-    return this.orderItemService.findById(id);
+  async findById(@Param('id') id: string): Promise<OrderItemResponseDTO> {
+    const item = await this.orderItemService.findById(id);
+
+    if (!item) {
+      throw new HttpException('Item not found', HttpStatus.NOT_FOUND);
+    }
+
+    return item;
   }
 
   @Post()
-  async addItem(@Body() item: ItemDTO): Promise<OrderItem> {
+  async create(@Body() item: ItemDTO): Promise<ItemCreateResponseDTO> {
     return this.orderItemService.create(item);
   }
 }
