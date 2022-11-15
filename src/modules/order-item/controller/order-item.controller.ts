@@ -7,11 +7,13 @@ import {
   Param,
   Post,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { ItemCreateResponseDTO } from '../dto/item-create-response.dto';
 import { ItemDTO } from '../dto/item.dto';
 import { OrderItemResponseDTO } from '../dto/order-item-response.dto';
 import { OrderItemService } from '../service/order-item.service';
 
+@ApiTags('order-item')
 @Controller('/api/item')
 export class OrderItemController {
   constructor(private orderItemService: OrderItemService) {}

@@ -11,14 +11,15 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { ItemDTO } from '../../order-item/dto/item.dto';
-import { UpdatedItemDTO } from '../../order-item/dto/updated-item.dto';
 import { DeleteOrderDTO } from '../dto/delete-order.dto';
 import { OrderResponseDTO } from '../dto/order-response.dto';
 import { UpdateOrderDTO } from '../dto/update-order.dto';
 import { Order } from '../Entity/order.entity';
 import { OrderService } from '../service/order.service';
 
+@ApiTags('order')
 @Controller('/api/orders')
 export class OrderController {
   constructor(private orderService: OrderService) {}
