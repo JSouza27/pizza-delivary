@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { OrderItemResponse } from '../../../mock/order-item.mock';
+import { responseDTO } from '../../../mock/order-item.mock';
 import {
   item,
   orderResponseDTO,
@@ -31,15 +31,18 @@ describe('ServiceService', () => {
           useValue: {
             save: jest.fn().mockResolvedValue(orderResponseDTO),
             find: jest.fn().mockResolvedValue([orderResponseDTO]),
-            findOneBy: jest.fn().mockResolvedValue(orderResponseDTO),
+            findOne: jest.fn().mockResolvedValue(orderResponseDTO),
             update: jest.fn().mockResolvedValue(updatedOrderResponse),
-            delete: jest.fn().mockResolvedValue(undefined),
+            delete: jest.fn().mockResolvedValue({
+              raw: [],
+              affected: 1,
+            }),
           },
         },
         {
           provide: ORDER_ITEM_REPOSITORY_TOKEN,
           useValue: {
-            save: jest.fn().mockResolvedValue(OrderItemResponse),
+            save: jest.fn().mockResolvedValue(responseDTO),
           },
         },
       ],
@@ -99,29 +102,29 @@ describe('ServiceService', () => {
         'f364e356-b100-45b9-a7f8-dd4d682427f8',
       );
 
-      expect(orderRepository.findOneBy).toHaveBeenCalledTimes(1);
+      expect(orderRepository.findOne).toHaveBeenCalledTimes(1);
       expect(result).toEqual(orderResponseDTO);
     });
 
     it('should return null if not exist', async () => {
-      jest.spyOn(orderRepository, 'findOneBy').mockResolvedValue(null);
+      jest.spyOn(orderRepository, 'findOne').mockResolvedValue(null);
 
       const result = await orderService.findById('2');
 
-      expect(orderRepository.findOneBy).toHaveBeenCalledTimes(1);
+      expect(orderRepository.findOne).toHaveBeenCalledTimes(1);
       expect(result).toEqual(null);
     });
   });
 
   describe('tests the method that delete', () => {
     it('should be successfully removed', async () => {
-      jest.spyOn(orderRepository, 'findOneBy').mockResolvedValue(null);
+      jest.spyOn(orderRepository, 'findOne').mockResolvedValue(null);
 
       const result = await orderService.delete(
         'f364e356-b100-45b9-a7f8-dd4d682427f8',
       );
 
-      expect(orderRepository.findOneBy).toHaveBeenCalledTimes(1);
+      expect(orderRepository.findOne).toHaveBeenCalledTimes(1);
       expect(result).toBeTruthy();
     });
   });

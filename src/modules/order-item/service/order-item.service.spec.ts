@@ -4,10 +4,11 @@ import { Repository } from 'typeorm';
 import { OrderItem } from '../Entity/order-item.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import {
+  findOneResponse,
+  itemResponseDTO,
   orderItem,
-  OrderItemResponse,
-  orderItemUpdated,
   responseDTO,
+  updateResponse,
 } from '../../../mock/order-item.mock';
 
 describe('ServiceService', () => {
@@ -23,9 +24,10 @@ describe('ServiceService', () => {
         {
           provide: ORDER_ITEM_REPOSITORY_TOKEN,
           useValue: {
-            save: jest.fn().mockResolvedValue(responseDTO),
-            findOneBy: jest.fn().mockResolvedValue(OrderItemResponse),
-            update: jest.fn().mockResolvedValue(orderItemUpdated),
+            save: jest.fn().mockResolvedValue(itemResponseDTO),
+            findOneBy: jest.fn().mockResolvedValue(responseDTO),
+            update: jest.fn().mockResolvedValue(updateResponse),
+            findOne: jest.fn().mockResolvedValue(findOneResponse),
             delete: jest.fn().mockResolvedValue(true),
           },
         },
@@ -53,46 +55,52 @@ describe('ServiceService', () => {
       expect(repository.save).toHaveBeenCalledTimes(1);
       expect(result).toBeInstanceOf(Object);
       expect(result).toHaveProperty('id');
-      expect(result).toEqual(responseDTO);
+      expect(result).toEqual(itemResponseDTO);
     });
   });
 
   describe('tests the method that findById', () => {
     it('should search for an item by id', async () => {
-      const result = await service.findById('1');
+      const result = await service.findById(
+        '3b2a63ca-75b3-4ed4-8f52-7bee8933d814',
+      );
 
-      expect(repository.findOneBy).toHaveBeenCalledTimes(1);
-      expect(result).toEqual(OrderItemResponse);
+      expect(repository.findOne).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(responseDTO);
     });
 
     it('should return null if not exist', async () => {
-      jest.spyOn(repository, 'findOneBy').mockResolvedValue(null);
+      jest.spyOn(repository, 'findOne').mockResolvedValueOnce(null);
 
       const result = await service.findById('2');
 
-      expect(repository.findOneBy).toHaveBeenCalledTimes(1);
+      expect(repository.findOne).toHaveBeenCalledTimes(1);
       expect(result).toEqual(null);
     });
   });
 
   describe('tests the method that update', () => {
     it('should update an order item', async () => {
-      jest.spyOn(repository, 'findOneBy').mockResolvedValue(orderItemUpdated);
-
       const data = {
-        quantity: 1,
+        id: '3b2a63ca-75b3-4ed4-8f52-7bee8933d814',
+        quantity: 5,
+        subtotal: 10,
       };
 
-      const result = await service.update('1', data);
+      const result = await service.update(
+        '3b2a63ca-75b3-4ed4-8f52-7bee8933d814',
+        'f364e356-b100-45b9-a7f8-dd4d682427f8',
+        data,
+      );
 
-      expect(repository.update).toHaveBeenCalledTimes(1);
-      expect(result).toEqual(orderItemUpdated);
+      expect(repository.save).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(updateResponse);
     });
   });
 
   describe('tests the method that delete', () => {
     it('should return a "true" on success', async () => {
-      jest.spyOn(repository, 'findOneBy').mockResolvedValue(null);
+      jest.spyOn(repository, 'findOneBy').mockResolvedValueOnce(null);
 
       const result = await service.delete('1');
 

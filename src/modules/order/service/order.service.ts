@@ -14,7 +14,6 @@ import { OrderResponseDTO } from '../dto/order-response.dto';
 import { ItemCreateResponseDTO } from '../../order-item/dto/item-create-response.dto';
 import { DeleteOrderDTO } from '../dto/delete-order.dto';
 import { UpdateOrderDTO } from '../dto/update-order.dto';
-import { OrderDTO } from '../dto/order.dto';
 import { UpdatedItemDTO } from '../../order-item/dto/updated-item.dto';
 
 @Injectable()
